@@ -1,12 +1,14 @@
 package web.controller;
 
-import data.CarsDAO;
-import data.CarsDAOImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import web.dao.CarsDAO;
+import web.dao.CarsDAOImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import web.model.Car;
+import web.service.CarsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +16,8 @@ import java.util.List;
 @Controller
 public class CarController {
 
-    private static List<Car> ALL_CARS;
-    private CarsDAO carsDAO = new CarsDAOImpl();
+    @Autowired
+    private CarsService carsService;
 
     @GetMapping(value = "/cars")
     public String getCars(@RequestParam(value = "count", required = false) Integer count, ModelMap model) {
@@ -23,13 +25,7 @@ public class CarController {
         return "cars";
     }
 
-    public List<Car> getCars(int count) {
-        if(ALL_CARS == null) {
-            ALL_CARS = new ArrayList<>();
-            ALL_CARS.addAll(carsDAO.getCars());
-        }
-        return ALL_CARS.stream().limit(count).toList();
+    private List<Car> getCars(int count) {
+        return carsService.getCars().stream().limit(count).toList();
     }
-
-
 }
