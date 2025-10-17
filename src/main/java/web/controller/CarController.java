@@ -21,11 +21,8 @@ public class CarController {
 
     @GetMapping(value = "/cars")
     public String getCars(@RequestParam(value = "count", required = false) Integer count, ModelMap model) {
-        model.addAttribute("cars", getCars(count == null ? Integer.MAX_VALUE : count));
+        model.addAttribute("cars", carsService.getCars(count == null ? Integer.MAX_VALUE : count));
         return "cars";
     }
 
-    private List<Car> getCars(int count) {
-        return carsService.getCars().stream().limit(count).toList();
-    }
 }

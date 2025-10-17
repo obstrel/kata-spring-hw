@@ -2,10 +2,11 @@ package web.model;
 
 import org.springframework.stereotype.Component;
 
+import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Entity
 public class Car {
 
     private String model;

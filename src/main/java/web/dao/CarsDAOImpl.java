@@ -1,11 +1,11 @@
 package web.dao;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import web.model.Car;
 
 import java.util.List;
 
-@Component
+@Repository
 public class CarsDAOImpl implements CarsDAO {
     @Override
     public List<Car> getCars() {
