@@ -17,6 +17,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring5.view.ThymeleafViewResolver;
 
+import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -61,6 +62,11 @@ public class WebConfig implements WebMvcConfigurer {
         templateEngine.setTemplateResolver(templateResolver());
         templateEngine.setEnableSpringELCompiler(true);
         return templateEngine;
+    }
+
+    @Bean
+    public EntityManager entityManager(DataSource dataSource) {
+        return entityManagerFactory(dataSource).getObject().createEntityManager();
     }
 
 
