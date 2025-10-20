@@ -1,7 +1,6 @@
 package web.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
