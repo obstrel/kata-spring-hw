@@ -4,13 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import web.model.User;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import java.util.List;
 
 @Repository
 public class UserDAOImpl implements UserDAO {
 
-    @Autowired
+    @PersistenceContext
     private EntityManager entityManager;
 
     @Override
@@ -22,26 +24,12 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void saveUser(User user) {
-        EntityTransaction transaction = null;
-
-        try {
-            transaction = entityManager.getTransaction();
-
-            transaction.begin();
-
-            if (user.getId() != null) {
-                entityManager.merge(user);
-            } else {
-                entityManager.persist(user);
-            }
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            System.err.println("Error saving entity: " + e.getMessage());
-            e.printStackTrace();
+        if (user.getId() != null) {
+            entityManager.merge(user);
+        } else {
+            entityManager.persist(user);
         }
+
     }
 
     @Override
@@ -53,25 +41,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public void removeUserById(Long id) {
-        EntityTransaction transaction = null;
-
-        try {
-            transaction = entityManager.getTransaction();
-
-            User user = entityManager.find(User.class, id);
-
-            transaction.begin();
-
-            entityManager.remove(user);
-
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null && transaction.isActive()) {
-                transaction.rollback();
-            }
-            System.err.println("Error saving entity: " + e.getMessage());
-            e.printStackTrace();
-        }
-
+        User user = entityManager.find(User.class, id);
+        entityManager.remove(user);
     }
 }

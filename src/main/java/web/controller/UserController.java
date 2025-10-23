@@ -17,7 +17,7 @@ import java.util.List;
 @Controller
 public class UserController {
 
-    final UserService userService;
+    final private UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
