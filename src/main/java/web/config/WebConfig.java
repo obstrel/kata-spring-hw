@@ -71,18 +71,10 @@ public class WebConfig implements WebMvcConfigurer {
         return templateEngine;
     }
 
-//    @Bean
-//    public EntityManager entityManager(DataSource dataSource) {
-//        return entityManagerFactory(dataSource).getObject().createEntityManager();
-//    }
-
     @Bean
     public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory/*, DataSource dataSource*/) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory);
-        // If your EntityManagerFactory uses a DataSource, you can also set it here explicitly,
-        // although it's often autodetected by JpaTransactionManager.
-        // transactionManager.setDataSource(dataSource);
         return transactionManager;
     }
 
