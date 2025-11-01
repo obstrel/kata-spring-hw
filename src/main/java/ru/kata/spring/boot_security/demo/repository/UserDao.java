@@ -4,7 +4,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.List;
 
-public interface UserDAO {
+public interface UserDao {
     List<User> getUsers();
     void saveUser(User user);
 

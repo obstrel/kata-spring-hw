@@ -7,6 +7,9 @@ import java.util.Set;
 @Entity
 public class Role {
 
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_ADMIN = "ADMIN";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
