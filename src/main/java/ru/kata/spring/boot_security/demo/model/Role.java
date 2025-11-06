@@ -1,11 +1,13 @@
 package ru.kata.spring.boot_security.demo.model;
 
-import javax.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-public class Role {
+public class Role implements GrantedAuthority {
 
     public static final String ROLE_USER = "USER";
     public static final String ROLE_ADMIN = "ADMIN";
@@ -70,5 +72,10 @@ public class Role {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    @Override
+    public String getAuthority() {
+        return name;
     }
 }

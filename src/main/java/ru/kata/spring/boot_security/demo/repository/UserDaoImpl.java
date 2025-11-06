@@ -3,8 +3,10 @@ package ru.kata.spring.boot_security.demo.repository;
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.model.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 
 @Repository
@@ -44,5 +46,14 @@ public class UserDaoImpl implements UserDao {
         entityManager.remove(user);
     }
 
-
+    @Override
+    public User findUserByEmail(String email) {
+        try {
+            TypedQuery<User> query = entityManager.createQuery("SELECT u FROM User u JOIN FETCH u.roles WHERE u.email = :email", User.class);
+            query.setParameter("email", email);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
 }

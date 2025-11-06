@@ -27,6 +27,15 @@ public class UserController {
         this.roleService = roleService;
     }
 
+    @GetMapping(value = "/users")
+    public String users(ModelMap model) {
+        List<User> users = userService.getUsers();
+        model.addAttribute("usersCount", "There are " + users.size() + " users stored in the DB");
+        model.addAttribute("users", users);
+
+        return "users";
+    }
+
     @GetMapping(value = "/adduser")
     public String addUser(ModelMap model) {
         model.addAttribute("user", UserService.createUser());
@@ -37,11 +46,11 @@ public class UserController {
 
     @PostMapping(value = "/saveuser")
     public String saveUser(@ModelAttribute("user") User user, ModelMap model,
-                           @RequestParam(value = "roleIds", required = false) List<Long> roleIds) {
+                           @RequestParam(value = "roles", required = false) List<String> roleNames) {
 
-        if (roleIds != null && !roleIds.isEmpty()) {
-            Set<Role> roles = roleIds.stream()
-                    .map(roleService::findById)
+        if (roleNames != null && !roleNames.isEmpty()) {
+            Set<Role> roles = roleNames.stream()
+                    .map(roleService::findByName)
                     .collect(Collectors.toSet());
             user.setRoles(roles);
         }
@@ -58,10 +67,18 @@ public class UserController {
         User user = userService.findUserById(id);
 
         model.addAttribute("user", user);
-        model.addAttribute("allRoles", userService.getAllRoles()); 
+        model.addAttribute("allRoles", userService.getAllRoles());
 
         return "edituser";
     }
+
+    @GetMapping("/removeuser")
+    public String removeUser(@RequestParam("id") Long id, ModelMap model) {
+        userService.removeUserById(id);
+
+        return "redirect:/users";
+    }
+
 
 
 }

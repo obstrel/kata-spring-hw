@@ -5,11 +5,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
@@ -38,6 +39,14 @@ public class RoleDaoImpl implements RoleDao {
     public List<Role> getAllRoles() {
         TypedQuery<Role> query = entityManager.createQuery("FROM Role", Role.class);
         return query.getResultList();
+    }
+
+    @Override
+    public List<Role> getDefaultRoles() {
+        return List.of(
+                new Role(Role.ROLE_ADMIN)
+                , new Role(Role.ROLE_USER)
+        );
     }
 
     @Override

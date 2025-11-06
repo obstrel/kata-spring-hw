@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <div>
+        <h1 th:text="${usersCount}"></h1>
+        <a href="adduser">Add user</a>
+        <div th:insert="~{frags :: logout}"></div>
+
+        <h2>Stored users</h2>
+        <th:block th:each="user : ${users}">
+            <div th:object="${user}">
+                <div th:text="*{FirstName + ' ' + LastName}"></div>
+                <div th:text="${user.roles.isEmpty() ? 'No Roles' : #strings.listJoin(user.getRoleNames(), ', ')}"></div>
+                <button type="button" th:onclick="|window.location.href='@{/edituser?id=}*{Id}'|">Edit</button>
+                <button style="background-color: red; color: white;" type="button" th:onclick="|window.location.href='@{/removeuser?id=}*{Id}'|">Remove</button>
+                <p />
+            </div>
+        </th:block>
+    </div>
+</body>
+</html>

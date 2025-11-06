@@ -20,4 +20,6 @@ public interface UserService {
     void removeUserById(Long id);
 
     public List<Role> getAllRoles();
+
+    void generateDefaultUsers();
 }
