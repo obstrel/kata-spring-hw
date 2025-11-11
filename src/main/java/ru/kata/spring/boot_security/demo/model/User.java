@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Entity
 public class User implements UserDetails {
-            ;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,7 +31,7 @@ public class User implements UserDetails {
     @Column
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles", // Имя таблицы-связки
             joinColumns = @JoinColumn(name = "user_id"), // Внешний ключ для User в таблице user_roles

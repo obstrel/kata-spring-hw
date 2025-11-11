@@ -1,16 +1,14 @@
-package ru.kata.spring.boot_security.demo.repository;
+package ru.kata.spring.boot_security.demo.dao;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
-import ru.kata.spring.boot_security.demo.model.User;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
@@ -30,7 +28,6 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    @Transactional
     public void saveRole(Role role) {
         entityManager.persist(role);
     }

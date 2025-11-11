@@ -19,7 +19,9 @@ public interface UserService {
 
     void removeUserById(Long id);
 
-    public List<Role> getAllRoles();
+    List<Role> getAllRoles();
 
     void generateDefaultUsers();
+
+    void assignRoles(User user, List<String> roleNames);
 }

@@ -1,19 +1,18 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repository.RoleDao;
-import ru.kata.spring.boot_security.demo.repository.UserDao;
+import ru.kata.spring.boot_security.demo.dao.RoleDao;
+import ru.kata.spring.boot_security.demo.dao.UserDao;
 
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -96,6 +95,16 @@ public class UserServiceImpl implements UserService {
             saveUser(normalUser);
         }
 
+    }
+
+    @Override
+    public void assignRoles(User user, List<String> roleNames) {
+        if (roleNames != null && !roleNames.isEmpty()) {
+            Set<Role> roles = roleNames.stream()
+                    .map(roleService::findByName)
+                    .collect(Collectors.toSet());
+            user.setRoles(roles);
+        }
     }
 
 }

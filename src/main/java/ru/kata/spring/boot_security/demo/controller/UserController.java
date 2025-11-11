@@ -48,13 +48,7 @@ public class UserController {
     public String saveUser(@ModelAttribute("user") User user, ModelMap model,
                            @RequestParam(value = "roles", required = false) List<String> roleNames) {
 
-        if (roleNames != null && !roleNames.isEmpty()) {
-            Set<Role> roles = roleNames.stream()
-                    .map(roleService::findByName)
-                    .collect(Collectors.toSet());
-            user.setRoles(roles);
-        }
-
+        userService.assignRoles(user, roleNames);
         userService.saveUser(user);
 
         model.addAttribute("successMessage", "User " + user.getLastName() + " stored success!");
