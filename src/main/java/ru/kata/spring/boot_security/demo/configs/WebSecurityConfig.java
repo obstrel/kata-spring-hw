@@ -42,7 +42,8 @@ public class WebSecurityConfig  {
                 .anyRequest().authenticated()
                 )
                 .formLogin(frmLogin -> frmLogin
-                    .successHandler(successUserHandler)
+                        .loginPage("/login")
+                        .successHandler(successUserHandler)
                     .permitAll()
                 )
                 .logout(logOut -> logOut
@@ -58,20 +59,6 @@ public class WebSecurityConfig  {
 
     @Bean
     public UserDetailsService userDetailsService() {
-//        UserDetails user =
-//                User.withDefaultPasswordEncoder()
-//                        .username("user")
-//                        .password("user")
-//                        .roles(Role.ROLE_USER)
-//                        .build();
-//        UserDetails admin =
-//                User.withDefaultPasswordEncoder()
-//                        .username("admin")
-//                        .password("admin")
-//                        .roles(Role.ROLE_ADMIN, Role.ROLE_USER)
-//                        .build();
-//
-//        return new InMemoryUserDetailsManager(user, admin);
         return userDetailsService;
     }
 

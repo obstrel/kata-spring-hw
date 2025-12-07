@@ -36,12 +36,29 @@ public class UserController {
         return "users";
     }
 
+    @GetMapping(value = "/userList")
+    public String userList(ModelMap model) {
+        List<User> users = userService.getUsers();
+        model.addAttribute("usersCount", "There are " + users.size() + " users stored in the DB");
+        model.addAttribute("users", users);
+
+        return "userlist";
+    }
+
     @GetMapping(value = "/adduser")
     public String addUser(ModelMap model) {
         model.addAttribute("user", UserService.createUser());
         model.addAttribute("allRoles", userService.getAllRoles()); // Передаем все доступные роли
 
         return "adduser";
+    }
+
+    @GetMapping(value = "/boot")
+    public String boot(ModelMap model) {
+        model.addAttribute("user", UserService.createUser());
+        model.addAttribute("allRoles", userService.getAllRoles()); // Передаем все доступные роли
+
+        return "boot";
     }
 
     @PostMapping(value = "/saveuser")
