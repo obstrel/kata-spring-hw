@@ -48,15 +48,18 @@ public class UserController {
     @GetMapping(value = "/adduser")
     public String addUser(ModelMap model) {
         model.addAttribute("user", UserService.createUser());
-        model.addAttribute("allRoles", userService.getAllRoles()); // Передаем все доступные роли
+        model.addAttribute("allRoles", userService.getAllRoles());
 
         return "adduser";
     }
 
     @GetMapping(value = "/boot")
     public String boot(ModelMap model) {
+        List<User> users = userService.getUsers();
+
         model.addAttribute("user", UserService.createUser());
-        model.addAttribute("allRoles", userService.getAllRoles()); // Передаем все доступные роли
+        model.addAttribute("users", users);
+        model.addAttribute("allRoles", userService.getAllRoles());
 
         return "boot";
     }
@@ -87,9 +90,16 @@ public class UserController {
     public String removeUser(@RequestParam("id") Long id, ModelMap model) {
         userService.removeUserById(id);
 
-        return "redirect:/users";
+        return "redirect:/boot";
     }
 
+    @GetMapping("/user")
+    public String userProfile(Model model) {
+        User user = userService.findCurrentUser();
+
+        model.addAttribute("user", user);
+        return "user";
+    }
 
 
 }

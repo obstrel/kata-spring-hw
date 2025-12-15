@@ -24,4 +24,6 @@ public interface UserService {
     void generateDefaultUsers();
 
     void assignRoles(User user, List<String> roleNames);
+
+    User findCurrentUser();
 }

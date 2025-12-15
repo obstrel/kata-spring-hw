@@ -1,12 +1,38 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head>
-    <title>Spring Security Example</title>
-</head>
-<body>
-    <h1>User, <span sec:authentication="name"></span> welcome spring boot security page!</h1>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layboot}">
 
-    <div th:insert="~{frags :: logout}"></div>
-</body>
+<div layout:fragment="content">
+    <div class="card">
+        <div class="card-header">
+            <p class="text-muted mb-0">О Вас</strong>
+            </p>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Имя</th>
+                        <th>Почта</th>
+                        <th>Роли</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:object="${user}">
+                        <td th:text="*{Id}">1</td>
+                        <td th:text="*{FirstName + ' ' + LastName}">Иван Петров</td>
+                        <td th:text="*{Email}">Email</td>
+                        <td th:text="${user.roles.isEmpty() ? 'No Roles' : #strings.listJoin(user.getRoleNames(), ', ')}">
+                            Roles
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </html>

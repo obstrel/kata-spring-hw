@@ -1,8 +1,77 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
 <div th:fragment="logout">
     <form th:action="@{/logout}" method="post">
         <button type="submit">Logout</button>
     </form>
 </div>
+
+<div th:fragment="add-user">
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-person-plus me-2"></i>
+                Создание нового пользователя
+            </h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/saveuser}" th:object="${user}" method="post">
+                <!-- Основные поля -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="firstName" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="firstName"
+                               th:field="*{firstName}" name="firstName" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="lastname" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="lastname"
+                               th:field="*{lastName}" name="lastName" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label">Email *</label>
+                        <input type="email" class="form-control" id="email"
+                               th:field="*{email}" name="email" required>
+                    </div>
+                </div>
+
+                <!-- Пароль -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="password" class="form-label">Пароль *</label>
+                        <input type="password" class="form-control" id="password"
+                               name="password" required>
+                    </div>
+                </div>
+
+                <!-- Роль и статус -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div  class="form-label">Роль *</div>
+                        <th:block th:each="role : ${allRoles}">
+                            <input type="checkbox" th:id="${'role_' + role.name}" th:name="roles" th:value="${role.name}"
+                                   th:checked="${#lists.contains(user.roles, role)}" />
+                            <label th:for="${'role_' + role.name}" th:text="${role.name}"></label><br/>
+                        </th:block>
+                    </div>
+                </div>
+
+                <!-- Кнопки -->
+                <div class="d-flex justify-content-between">
+                    <a th:href="@{/boot}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Отмена
+                    </a>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle me-1"></i> Создать пользователя
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+
 </html>
