@@ -1,17 +1,13 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-<div>
-    <h1 th:text="${successMessage}"></h1>
-    <div th:insert="~{frags :: logout}"></div>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layboot}">
 
-    <a href="adduser">Add another</a>
-    <a href="users">Go to users list</a>
+<div layout:fragment="content">
+    <h1 th:text="${successMessage}"></h1>
+
+    <p><a href="adduser" class="btn btn-primary">Add another</a></p>
+    <p><a href="users" class="btn btn-primary">Go to users list</a></p>
 </div>
-</body>
+
 </html>

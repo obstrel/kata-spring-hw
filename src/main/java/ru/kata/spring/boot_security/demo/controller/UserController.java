@@ -30,8 +30,10 @@ public class UserController {
     @GetMapping(value = "/users")
     public String users(ModelMap model) {
         List<User> users = userService.getUsers();
-        model.addAttribute("usersCount", "There are " + users.size() + " users stored in the DB");
+
         model.addAttribute("users", users);
+        model.addAttribute("user", UserService.createUser());
+        model.addAttribute("allRoles", userService.getAllRoles());
 
         return "users";
     }
@@ -51,17 +53,6 @@ public class UserController {
         model.addAttribute("allRoles", userService.getAllRoles());
 
         return "adduser";
-    }
-
-    @GetMapping(value = "/boot")
-    public String boot(ModelMap model) {
-        List<User> users = userService.getUsers();
-
-        model.addAttribute("user", UserService.createUser());
-        model.addAttribute("users", users);
-        model.addAttribute("allRoles", userService.getAllRoles());
-
-        return "boot";
     }
 
     @PostMapping(value = "/saveuser")
@@ -90,7 +81,7 @@ public class UserController {
     public String removeUser(@RequestParam("id") Long id, ModelMap model) {
         userService.removeUserById(id);
 
-        return "redirect:/boot";
+        return "redirect:/users";
     }
 
     @GetMapping("/user")

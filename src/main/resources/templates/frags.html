@@ -7,18 +7,23 @@
     </form>
 </div>
 
-<div th:fragment="add-user">
-
+<div th:fragment="add-user(isCreate)">
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0">
-                <i class="bi bi-person-plus me-2"></i>
-                Создание нового пользователя
+                <th:block th:if="${isCreate}">
+                    <i class="bi bi-person-plus me-2"></i>
+                    Создание нового пользователя
+                </th:block>
+                <th:block th:unless="${isCreate}">
+                    <i class="bi bi-pencil me-2"></i>
+                    Редактирование пользователя
+                </th:block>
             </h5>
         </div>
         <div class="card-body">
             <form th:action="@{/saveuser}" th:object="${user}" method="post">
-                <!-- Основные поля -->
+                <input type="hidden" th:field="*{id}" />
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="firstName" class="form-label">Имя</label>
@@ -49,10 +54,11 @@
                 <!-- Роль и статус -->
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <div  class="form-label">Роль *</div>
+                        <div class="form-label">Роль *</div>
                         <th:block th:each="role : ${allRoles}">
-                            <input type="checkbox" th:id="${'role_' + role.name}" th:name="roles" th:value="${role.name}"
-                                   th:checked="${#lists.contains(user.roles, role)}" />
+                            <input type="checkbox" th:id="${'role_' + role.name}" th:name="roles"
+                                   th:value="${role.name}"
+                                   th:checked="${#lists.contains(user.roles, role)}"/>
                             <label th:for="${'role_' + role.name}" th:text="${role.name}"></label><br/>
                         </th:block>
                     </div>
@@ -60,11 +66,17 @@
 
                 <!-- Кнопки -->
                 <div class="d-flex justify-content-between">
-                    <a th:href="@{/boot}" class="btn btn-secondary">
+                    <a th:href="@{/users}" class="btn btn-secondary">
                         <i class="bi bi-arrow-left me-1"></i> Отмена
                     </a>
                     <button type="submit" class="btn btn-success">
-                        <i class="bi bi-check-circle me-1"></i> Создать пользователя
+                        <i class="bi bi-check-circle me-1"></i>
+                        <th:block th:if="${isCreate}">
+                            Создать пользователя
+                        </th:block>
+                        <th:block th:unless="${isCreate}">
+                            Сохранить изменения
+                        </th:block>
                     </button>
                 </div>
             </form>
