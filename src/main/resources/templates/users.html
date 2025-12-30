@@ -70,7 +70,8 @@
                                     <td>
                                         <button type="button" class="btn btn-outline-secondary" th:onclick="|window.location.href='@{/edituser?id=}*{Id}'|">
                                             <i class="bi bi-pencil"></i> Edit</button>
-                                        <button class="btn btn-outline-danger" type="button" th:onclick="|window.location.href='@{/removeuser?id=}*{Id}'|">
+                                        <button class="btn btn-outline-danger delete-btn" type="button"
+                                                th:data-user-id="${user.id}">
                                             <i class="bi bi-trash"></i> Remove</button>
                                     </td>
                                 </tr>
@@ -90,5 +91,40 @@
 
     </div>
 </div>
+
+<script layout:fragment="script">
+    $(document).ready(function() {
+        const API_BASE = '/api/users';
+
+        // Удаление пользователя
+        $(document).on('click', '.delete-btn', function() {
+            const userId = $(this).data('user-id');
+            const userName = $(this).closest('tr').find('td:nth-child(2)').text();
+
+            if (confirm(`Удалить пользователя "${userName}"?`)) {
+                $.ajax({
+                    url: `${API_BASE}/${userId}`,
+                    method: 'DELETE',
+                    success: () => {
+                        $(this).closest('tr').fadeOut(300, function() {
+                            $(this).remove();
+                            updateTotalCount();
+                        });
+                    },
+                    error: (xhr) => {
+                        alert('Ошибка удаления: ' + xhr.statusText);
+                    }
+                });
+            }
+        });
+
+
+        // Обновление общего счетчика
+        function updateTotalCount() {
+            const count = $('tbody tr:visible').length;
+            $('.card-header strong').text(count);
+        }
+    });
+</script>
 
 </html>
