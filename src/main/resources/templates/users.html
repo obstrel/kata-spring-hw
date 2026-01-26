@@ -4,6 +4,52 @@
       layout:decorate="~{layboot}">
 
 <div layout:fragment="content">
+
+    <!-- Модальное окно редактирования -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редактировать пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editUserForm">
+                        <!-- Скрытое поле с ID -->
+                        <input type="hidden" id="editUserId" name="id">
+
+                        <div class="mb-3">
+                            <label for="editFirstName" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="editFirstName" name="firstName" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editLastName" class="form-label">Фамилия</label>
+                            <input type="text" class="form-control" id="editLastName" name="lastName" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" name="email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Роли </label>
+                            <div id="rolesContainer" class="border rounded p-3"
+                                 style="max-height: 200px; overflow-y: auto;">
+                                <!-- Чекбоксы появятся здесь через JS -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="saveChangesBtn">Сохранить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Page Header with Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
@@ -66,13 +112,22 @@
                                     <td th:text="*{Id}">1</td>
                                     <td th:text="*{FirstName + ' ' + LastName}">Иван Петров</td>
                                     <td th:text="*{Email}">Email</td>
-                                    <td th:text="${user.roles.isEmpty() ? 'No Roles' : #strings.listJoin(user.getRoleNames(), ', ')}">Roles</td>
+                                    <td th:text="${user.roles.isEmpty() ? 'No Roles' : #strings.listJoin(user.getRoleNames(), ', ')}">
+                                        Roles
+                                    </td>
                                     <td>
-                                        <button type="button" class="btn btn-outline-secondary" th:onclick="|window.location.href='@{/edituser?id=}*{Id}'|">
-                                            <i class="bi bi-pencil"></i> Edit</button>
+                                        <button type="button" class="btn btn-outline-secondary edit-btn"
+                                                th:data-id="${user.id}"
+                                                th:data-firstname="${user.firstName}"
+                                                th:data-lastname="${user.lastName}"
+                                                th:data-email="${user.email}"
+                                                th:data-roles="${#strings.listJoin(user.getRoleNames(), ', ')}">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </button>
                                         <button class="btn btn-outline-danger delete-btn" type="button"
                                                 th:data-user-id="${user.id}">
-                                            <i class="bi bi-trash"></i> Remove</button>
+                                            <i class="bi bi-trash"></i> Remove
+                                        </button>
                                     </td>
                                 </tr>
                             </th:block>
@@ -93,8 +148,191 @@
 </div>
 
 <script layout:fragment="script">
+
+
     $(document).ready(function() {
+
         const API_BASE = '/api/users';
+        // Инициализация модального окна Bootstrap
+        const editModal = new bootstrap.Modal(document.getElementById('editUserModal'));
+
+
+
+        // Получаем доступные роли (если есть)
+        let availableRoles = [];
+        try {
+            // Если есть глобальная переменная с ролями
+            if (typeof window.AVAILABLE_ROLES !== 'undefined') {
+                availableRoles = window.AVAILABLE_ROLES;
+            }
+        } catch(e) {}
+
+        if (availableRoles.length > 0) {
+            $('#availableRoles').text(availableRoles.join(', '));
+        }
+
+        // === ОТКРЫТИЕ МОДАЛЬНОГО ОКНА ДЛЯ РЕДАКТИРОВАНИЯ ===
+          $(document).on('click', '.edit-btn', function() {
+            const $btn = $(this);
+
+            // Получаем данные пользователя
+            const userData = {
+                id: $btn.data('id'),
+                firstName: $btn.data('firstname'),
+                lastName: $btn.data('lastname'),
+                email: $btn.data('email'),
+                roles: ($btn.data('roles') || '')
+                    .split(',')
+                    .map(r => r.trim())
+                    .filter(r => r)
+            };
+
+            console.log('Данные пользователя:', userData);
+
+            // Заполняем форму
+            fillEditForm(userData);
+
+            // Показываем модальное окно
+            editModal.show();
+        });
+
+        // === СОХРАНЕНИЕ ИЗМЕНЕНИЙ ===
+        $('#saveChangesBtn').click(function() {
+            saveUserChanges();
+        });
+
+    /**
+     * Сохраняет изменения пользователя
+     */
+
+    function saveUserChanges() {
+        const $btn = $('#saveChangesBtn');
+        const $btnText = $btn.find('.btn-text');
+        const $spinner = $btn.find('.spinner-border');
+
+        // Показываем спиннер
+        $btnText.addClass('d-none');
+        $spinner.removeClass('d-none');
+        $btn.prop('disabled', true);
+
+        // Собираем данные
+        const formData = {
+            id: $('#editUserId').val(),
+            firstName: $('#editFirstName').val().trim(),
+            lastName: $('#editLastName').val().trim(),
+            email: $('#editEmail').val().trim(),
+            roles: getSelectedRoles()
+        };
+
+        console.log('Отправляемые данные:', formData);
+
+        // Валидация
+/*        if (!validateForm(formData)) {
+            resetSaveButton($btn, $btnText, $spinner);
+            return;
+        }
+*/
+        alert(JSON.stringify(formData.roles));
+        // Отправляем запрос
+        $.ajax({
+            url: `${API_BASE}/${formData.id}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                // Закрываем модалку
+                editModal.hide();
+
+                // Обновляем строку в таблице
+                updateUserInTable(response);
+
+                // Показываем уведомление
+                showSuccessAlert('Пользователь успешно обновлён!');
+            },
+            error: function(xhr) {
+                showErrorAlert('Ошибка сохранения: ' + getErrorMessage(xhr));
+            },
+            complete: function() {
+                resetSaveButton($btn, $btnText, $spinner);
+            }
+        });
+    }
+
+    /**
+     * Обновляет пользователя в таблице
+     */
+    function updateUserInTable(user) {
+        const $row = $(`button.edit-btn[data-id="${user.id}"]`).closest('tr');
+
+        if ($row.length === 0) {
+            console.warn('Строка пользователя не найдена');
+            return;
+        }
+
+        // Обновляем данные в ячейках
+        $row.find('td:nth-child(2)').text(`${user.firstName} ${user.lastName}`);
+        $row.find('td:nth-child(3)').text(user.email);
+
+        // Форматируем роли
+        const rolesText = user.roles && user.roles.length > 0
+            ? user.roles.map(r => r.name || r).join(', ')
+            : 'No Roles';
+        $row.find('td:nth-child(4)').text(rolesText);
+
+        // Обновляем data-атрибуты кнопки
+        const $editBtn = $row.find('.edit-btn');
+        $editBtn.data('firstname', user.firstName);
+        $editBtn.data('lastname', user.lastName);
+        $editBtn.data('email', user.email);
+        $editBtn.data('roles', rolesText);
+
+        // Подсвечиваем строку
+        highlightRow($row);
+    }
+
+    function highlightRow($row) {
+        $row.addClass('table-success');
+        setTimeout(() => {
+            $row.removeClass('table-success');
+        }, 2000);
+    }
+
+    /**
+     * Получает выбранные роли из чекбоксов
+     */
+    function getSelectedRoles() {
+        const selectedRoles = [];
+        $('.role-checkbox:checked').each(function() {
+            selectedRoles.push($(this).val());
+        });
+        return selectedRoles;
+    }
+
+        // === ОБНОВЛЕНИЕ СТРОКИ ТАБЛИЦЫ ===
+        function updateTableRow(user) {
+            const $row = $(`button[data-id="${user.id}"]`).closest('tr');
+
+            // Форматируем роли
+            const rolesText = user.roles && user.roles.length > 0
+                ? user.roles.map(r => r.name || r).join(', ')
+                : 'No Roles';
+
+            // Обновляем ячейки
+            $row.find('td:nth-child(2)').text(`${user.firstName} ${user.lastName}`);
+            $row.find('td:nth-child(3)').text(user.email);
+            $row.find('td:nth-child(4)').text(rolesText);
+
+            // Обновляем data-атрибуты кнопки
+            $row.find('.edit-btn')
+                .data('firstname', user.firstName)
+                .data('lastname', user.lastName)
+                .data('email', user.email)
+                .data('roles', user.roles.map(r => r.name || r).join(', '));
+
+            // Добавляем анимацию
+            $row.addClass('table-success');
+            setTimeout(() => $row.removeClass('table-success'), 2000);
+        }
 
         // Удаление пользователя
         $(document).on('click', '.delete-btn', function() {
@@ -124,6 +362,91 @@
             const count = $('tbody tr:visible').length;
             $('.card-header strong').text(count);
         }
+
+        // Очистка формы при закрытии модального окна
+        $('#editUserModal').on('hidden.bs.modal', function() {
+            $('#editUserForm')[0].reset();
+        });
+
+    function fillEditForm(userData) {
+        // Основные поля
+        $('#editUserId').val(userData.id);
+        $('#editFirstName').val(userData.firstName);
+        $('#editLastName').val(userData.lastName);
+        $('#editEmail').val(userData.email);
+
+        // Рендерим чекбоксы ролей
+        renderRoleCheckboxes(userData.roles);
+    }
+
+    /**
+     * Рендерит чекбоксы ролей
+     */
+    function renderRoleCheckboxes(userRoles) {
+        const $container = $('#rolesContainer');
+        $container.empty();
+
+        if (!ALL_ROLES || ALL_ROLES.length === 0) {
+            $container.html('<div class="text-muted">Нет доступных ролей</div>');
+            return;
+        }
+
+        ALL_ROLES.forEach(role => {
+            // Проверяем, есть ли роль у пользователя
+            const isChecked = userRoles.includes(role);
+
+            const $checkbox = $(`
+                <div class="form-check mb-2">
+                    <input class="form-check-input role-checkbox"
+                           type="checkbox"
+                           value="${role}"
+                           id="role_${role}"
+                           ${isChecked ? 'checked' : ''}>
+                    <label class="form-check-label" for="role_${role}">
+                        ${role}
+                    </label>
+                </div>
+            `);
+
+            $container.append($checkbox);
+        });
+    }
+
+    function resetSaveButton($btn, $btnText, $spinner) {
+        $btnText.removeClass('d-none');
+        $spinner.addClass('d-none');
+        $btn.prop('disabled', false);
+    }
+
+    function showSuccessAlert(message) {
+        showAlert(message, 'success');
+    }
+
+    function showErrorAlert(message) {
+        showAlert(message, 'danger');
+    }
+
+    function showAlert(message, type) {
+        // Удаляем старые алерты
+        $('.auto-alert').remove();
+
+        // Создаём новый алерт
+        const $alert = $(`
+            <div class="alert alert-${type} alert-dismissible fade show auto-alert"
+                 role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+
+        $('body').append($alert);
+
+        // Автоматически скрываем через 5 секунд
+        setTimeout(() => {
+            $alert.alert('close');
+        }, 5000);
+    }
+
     });
 </script>
 
