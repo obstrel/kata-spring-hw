@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +14,7 @@ import ru.kata.spring.boot_security.demo.dao.UserDao;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -114,6 +116,40 @@ public class UserServiceImpl implements UserService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         return (User) auth.getPrincipal();
+    }
+
+    @Override
+    @Transactional
+    public User updateUserFromRequestBody(Long userId, Map<String, Object> requestBody) {
+        User user = findUserById(userId);
+
+        // Обновляем поля из мапы
+        if (requestBody.containsKey("firstName")) {
+            user.setFirstName((String) requestBody.get("firstName"));
+        }
+
+        if (requestBody.containsKey("lastName")) {
+            user.setLastName((String) requestBody.get("lastName"));
+        }
+
+        if (requestBody.containsKey("email")) {
+            String newEmail = (String) requestBody.get("email");
+            user.setEmail(newEmail);
+        }
+
+        // Обновляем роли
+        if (requestBody.containsKey("roles")) {
+            try {
+                List<String> roleNames = (List<String>) requestBody.get("roles");
+                assignRoles(user, roleNames);
+            } catch (ClassCastException e) {
+                return user;
+            }
+        }
+
+        saveUser(user);
+
+        return user;
     }
 
 }

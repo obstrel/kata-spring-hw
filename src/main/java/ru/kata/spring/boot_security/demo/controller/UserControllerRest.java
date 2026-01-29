@@ -37,37 +37,8 @@ public class UserControllerRest {
             @PathVariable Long id,
             @RequestBody Map<String, Object> updates) {
 
-        User user = userService.findUserById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
+        User user = userService.updateUserFromRequestBody(id, updates);
 
-        // Обновляем поля из мапы
-        if (updates.containsKey("firstName")) {
-            user.setFirstName((String) updates.get("firstName"));
-        }
-
-        if (updates.containsKey("lastName")) {
-            user.setLastName((String) updates.get("lastName"));
-        }
-
-        if (updates.containsKey("email")) {
-            String newEmail = (String) updates.get("email");
-            user.setEmail(newEmail);
-        }
-
-        // Обновляем роли
-        if (updates.containsKey("roles")) {
-            try {
-                List<String> roleNames = (List<String>) updates.get("roles");
-                userService.assignRoles(user, roleNames);
-            } catch (ClassCastException e) {
-                return ResponseEntity.badRequest()
-                        .body(Map.of("error", "Роли должны быть списком строк"));
-            }
-        }
-
-        userService.saveUser(user);
 
         // Возвращаем обновленного пользователя
         Map<String, Object> response = new HashMap<>();

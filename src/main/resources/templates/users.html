@@ -226,13 +226,6 @@
 
         console.log('Отправляемые данные:', formData);
 
-        // Валидация
-/*        if (!validateForm(formData)) {
-            resetSaveButton($btn, $btnText, $spinner);
-            return;
-        }
-*/
-        alert(JSON.stringify(formData.roles));
         // Отправляем запрос
         $.ajax({
             url: `${API_BASE}/${formData.id}`,
