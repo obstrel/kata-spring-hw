@@ -40,7 +40,6 @@ public class UserControllerRest {
         User user = userService.updateUserFromRequestBody(id, updates);
 
 
-        // Возвращаем обновленного пользователя
         Map<String, Object> response = new HashMap<>();
         response.put("id", user.getId());
         response.put("firstName", user.getFirstName());
@@ -52,21 +51,15 @@ public class UserControllerRest {
 
         return ResponseEntity.ok(response);
     }
-//
-//    @PutMapping("/{id}")
-//    public ResponseEntity<?> updateUser(@PathVariable Long id,
-//                                        @RequestBody User userData) {
-//        User user = userService.findUserById(id);
-//
-//        // Копируем только разрешённые поля
-//        user.setFirstName(userData.getFirstName());
-//        user.setLastName(userData.getLastName());
-//        user.setEmail(userData.getEmail());
-////        userService.assignRoles(user, userData.getRoles());
-//
-//        // Не копируем пароль, id и другие чувствительные поля!
-//
-//        userService.saveUser(user);
-//        return ResponseEntity.ok(user);
-//    }
+
+    @PostMapping("/save")
+    public ResponseEntity<String> createUser(@RequestBody User user) {
+        try {
+            userService.saveUser(user);
+            return ResponseEntity.ok("Пользователь создан успешно");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Ошибка при сохранении: " + e.getMessage());
+        }
+    }
 }

@@ -50,15 +50,67 @@
         </div>
     </div>
 
+    <!-- Модальное окно создания -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить нового пользователя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addUserForm">
+                        <div class="mb-3">
+                            <label for="addFirstName" class="form-label">Имя</label>
+                            <input type="text" class="form-control" id="addFirstName" name="firstName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLastName" class="form-label">Фамилия</label>
+                            <input type="text" class="form-control" id="addLastName" name="lastName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="addEmail" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPassword" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="addPassword" name="password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Роли</label>
+                            <div id="addRolesContainer" class="border rounded p-3">
+                                <div th:each="role : ${allRoles}" class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           name="roles"
+                                           th:value="${role.id}"
+                                           th:id="${'roleAdd' + role.id}"
+                                           th:data-name="${role.name}">
+                                    <label class="form-check-label" th:for="${'roleAdd' + role.id}"
+                                           th:text="${role.name}">
+                                        ROLE_USER
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-success" id="confirmAddBtn">Создать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Page Header with Actions -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">Управление пользователями</h2>
         </div>
         <div class="btn-group">
-            <a th:href="@{/adduser}" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="bi bi-person-plus"></i> Добавить пользователя
-            </a>
+            </button>
         </div>
     </div>
 
@@ -250,6 +302,48 @@
             }
         });
     }
+
+// Обработка кнопки "Создать" в модальном окне
+$('#confirmAddBtn').on('click', function() {
+    const $form = $('#addUserForm');
+
+    // 1. Проверка валидности (HTML5 validation)
+    if (!$form[0].checkValidity()) {
+        $form[0].reportValidity();
+        return;
+    }
+
+    // 2. Сбор основных данных формы в объект
+    let userData = {};
+    const formData = $form.serializeArray();
+    $.each(formData, function() {
+        userData[this.name] = this.value;
+    });
+
+    // 3. Сбор выбранных ролей (массив объектов для Spring/Jackson)
+    userData.roles = [];
+    $('#addRolesContainer input[type="checkbox"]:checked').each(function() {
+        userData.roles.push({
+            id: $(this).val(),
+            name: $(this).data('name') // если в чекбоксе есть data-name="ROLE_USER"
+        });
+    });
+
+    // 4. Отправка AJAX (POST)
+    $.ajax({
+        url: `${API_BASE}/save`,
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(userData),
+        success: function() {
+            $('#addUserModal').modal('hide');
+            location.reload();
+        },
+        error: function(xhr) {
+            alert('Ошибка при создании пользователя: ' + xhr.responseText);
+        }
+    });
+});
 
     /**
      * Обновляет пользователя в таблице

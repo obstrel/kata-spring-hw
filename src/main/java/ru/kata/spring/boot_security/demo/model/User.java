@@ -32,7 +32,6 @@ public class User implements UserDetails {
     @Column
     private String password;
 
-    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_roles", // Имя таблицы-связки

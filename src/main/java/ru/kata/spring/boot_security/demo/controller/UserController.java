@@ -89,6 +89,7 @@ public class UserController {
         User user = userService.findCurrentUser();
 
         model.addAttribute("user", user);
+        model.addAttribute("allRoles", userService.getAllRoles());
         return "user";
     }
 
