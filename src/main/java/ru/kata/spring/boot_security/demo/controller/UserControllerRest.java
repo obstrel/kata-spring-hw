@@ -62,4 +62,9 @@ public class UserControllerRest {
                     .body("Ошибка при сохранении: " + e.getMessage());
         }
     }
+
+    @GetMapping("getUsers")
+    public ResponseEntity<List<User>> getUsers() {
+        return ResponseEntity.ok(userService.getUsers());
+    }
 }

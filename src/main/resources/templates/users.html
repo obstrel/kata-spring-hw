@@ -148,7 +148,7 @@
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
+                        <table class="table table-hover mb-0" id="usersTableBody">
                             <thead>
                             <tr>
                                 <th>ID</th>
@@ -345,6 +345,13 @@ $('#confirmAddBtn').on('click', function() {
     });
 });
 
+$('#addUserModal').on('show.bs.modal', function () {
+    $(this).find('form')[0].reset();
+    // Если роли подгружаются динамически, можно их тоже сбросить:
+    $(this).find('input[type="checkbox"]').prop('checked', false);
+});
+
+
     /**
      * Обновляет пользователя в таблице
      */
@@ -454,6 +461,37 @@ $('#confirmAddBtn').on('click', function() {
         $('#editUserModal').on('hidden.bs.modal', function() {
             $('#editUserForm')[0].reset();
         });
+
+function refreshUserTable() {
+    $.ajax({
+        url: `${API_BASE}/getUsers`,
+        type: 'GET',
+        success: function(users) {
+            const tableBody = $('#usersTableBody');
+            tableBody.empty();
+
+            users.forEach(user => {
+                const roles = user.roles.map(r => r.name.replace('ROLE_', '')).join(' ');
+
+                const row = `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.firstName} ${user.lastName}</td>
+                        <td>${user.email}</td>
+                        <td>${roles}</td>
+                        <td>
+                            <button class="btn btn-info btn-sm edit-btn"
+                                    data-id="${user.id}">Edit</button>
+                            <button class="btn btn-danger btn-sm delete-btn"
+                                    data-id="${user.id}">Delete</button>
+                        </td>
+                    </tr>`;
+                tableBody.append(row);
+            });
+        }
+    });
+}
+
 
     function fillEditForm(userData) {
         // Основные поля
