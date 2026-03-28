@@ -12,7 +12,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String redirectToHome() {
-        return "redirect:/home"; // Перенаправляем с корневого URL на /home
+        return "redirect:/home";
     }
 
     @GetMapping("/home")
@@ -20,11 +20,11 @@ public class HomeController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
         model.addAttribute("username", currentUserName);
-        return "home"; // Возвращаем имя шаблона home.html
+        return "home";
     }
 
     @GetMapping("/login")
     public String login() {
-        return "login"; // Возвращаем имя шаблона login.html
+        return "login";
     }
 }

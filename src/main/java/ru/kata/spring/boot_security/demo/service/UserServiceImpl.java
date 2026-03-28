@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
     public User updateUserFromRequestBody(Long userId, Map<String, Object> requestBody) {
         User user = findUserById(userId);
 
-        // Обновляем поля из мапы
+
         if (requestBody.containsKey("firstName")) {
             user.setFirstName((String) requestBody.get("firstName"));
         }
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(newEmail);
         }
 
-        // Обновляем роли
+
         if (requestBody.containsKey("roles")) {
             try {
                 List<String> roleNames = (List<String>) requestBody.get("roles");

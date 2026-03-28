@@ -25,7 +25,7 @@ public class UserControllerRest {
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.removeUserById(id);
-            return ResponseEntity.ok().build();  // HTTP 200 OK
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Ошибка удаления: " + e.getMessage());

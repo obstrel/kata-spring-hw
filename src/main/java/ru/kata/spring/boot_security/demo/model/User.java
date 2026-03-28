@@ -34,9 +34,9 @@ public class User implements UserDetails {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_roles", // Имя таблицы-связки
-            joinColumns = @JoinColumn(name = "user_id"), // Внешний ключ для User в таблице user_roles
-            inverseJoinColumns = @JoinColumn(name = "role_id") // Внешний ключ для Role в таблице user_roles
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
 

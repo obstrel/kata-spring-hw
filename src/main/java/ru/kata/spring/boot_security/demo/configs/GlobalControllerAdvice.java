@@ -17,7 +17,7 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute
     public void addAttributes(HttpServletRequest request, Model model) {
-        // Определяем активную страницу по URI
+
         String uri = request.getRequestURI();
         String activePage = "";
         String pageTitle = "Default";
