@@ -63,6 +63,7 @@ public class UserController {
         userService.saveUser(user);
 
         model.addAttribute("successMessage", "User " + user.getLastName() + " stored success!");
+        model.addAttribute("allRoles", userService.getAllRoles());
 
         return "saveuser";
     }
